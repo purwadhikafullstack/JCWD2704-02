@@ -10,16 +10,254 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  code      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("samples") // if you want to use snake_case format
+enum Role {
+  user
+  superAdmin
+  storeAdmin
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  id             String        @id @default(cuid())
+  name           String
+  email          String        @unique
+  password       String
+  profilePicture Bytes?        @db.LongBlob
+  isVerified     Boolean?      @default(false)
+  role           Role?
+  referralCode   String?       @unique
+  referredCode   String?
+  Address        Address[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  VoucherUser    VoucherUser[]
+  Store          Store[]
+
+  @@index([name, email])
+  @@map("users")
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  address    String
+  city       City     @relation(fields: [cityId], references: [id])
+  cityId     Int
+  postalCode Int
+  latitude   Float
+  longitude  Float
+  Order      Order[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("addresses")
+}
+
+model City {
+  id         Int       @id @default(autoincrement())
+  province   String
+  type       String
+  cityName   String
+  postalCode String
+  Address    Address[]
+  Store      Store[]
+
+  @@map("cities")
+}
+
+model Store {
+  id              String            @id @default(cuid())
+  name            String
+  user            User              @relation(fields: [userId], references: [id])
+  userId          String
+  address         String
+  city            City              @relation(fields: [cityId], references: [id])
+  cityId          Int
+  postalCode      Int
+  latitude        Float
+  longitude       Float
+  Stock           Stock[]
+  Cart            Cart[]
+  OrderItem       OrderItem[]
+  ProductDiscount ProductDiscount[]
+  Voucher         Voucher[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("stores")
+}
+
+model Product {
+  id              String            @id @default(cuid())
+  name            String
+  description     String            @db.Text
+  weight          Float
+  price           Float
+  category        Category          @relation(fields: [categoryId], references: [id])
+  categoryId      String
+  ProductImage    ProductImage[]
+  Stock           Stock[]
+  Cart            Cart[]
+  OrderItem       OrderItem[]
+  ProductDiscount ProductDiscount[]
+  Voucher         Voucher[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("products")
+}
+
+model Category {
+  id      String    @id @default(cuid())
+  name    String
+  Product Product[]
+
+  @@map("categories")
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  image     Bytes    @db.LongBlob
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("product_images")
+}
+
+model Stock {
+  id        String   @id @default(cuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("stocks")
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("carts")
+}
+
+enum Status {
+  waitingPayment
+  waitingConfirmation
+  processed
+  shipped
+  confirmed
+  cancelled
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  invoice      String
+  totalPrice   Float
+  address      Address     @relation(fields: [addressId], references: [id])
+  addressId    String
+  shippingCost Float
+  shippedAt    DateTime?
+  paymentProof Bytes?      @db.LongBlob
+  paidAt       DateTime?
+  status       Status
+  OrderItem    OrderItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  quantity  Int
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("order_items")
+}
+
+enum Type {
+  percentage
+  nominal
+}
+
+enum CategoryDisc {
+  buyGet
+  discount
+}
+
+enum CategoryVoucher {
+  shippingCost
+  totalPurchase
+  product
+}
+
+model ProductDiscount {
+  id        String   @id @default(cuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  type      Type
+  value     Float
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("product_discounts")
+}
+
+model Voucher {
+  id               String          @id @default(cuid())
+  voucherCode      String
+  product          Product         @relation(fields: [productId], references: [id])
+  productId        String
+  store            Store           @relation(fields: [storeId], references: [id])
+  storeId          String
+  category         CategoryVoucher
+  type             Type
+  value            Float
+  maxDiscount      Float?
+  minTransaction   Int?
+  minTotalPurchase Float?
+  startDate        DateTime
+  endDate          DateTime
+  VoucherUser      VoucherUser[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@map("vouchers")
+}
+
+model VoucherUser {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  voucher   Voucher  @relation(fields: [voucherId], references: [id])
+  voucherId String
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("voucher_users")
 }
