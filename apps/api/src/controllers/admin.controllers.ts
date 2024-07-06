@@ -7,7 +7,43 @@ export class AdminController {
     try {
       const data = await AdminService.getAdmin();
       res.status(200).send({
-        message: 'User store admin',
+        message: 'All Admin Store',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await AdminService.getById(req);
+      res.status(200).send({
+        message: 'Admin Store by their ID',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getByName(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await AdminService.getByName(req);
+      res.status(200).send({
+        message: 'Admin Store by filter name',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getByPages(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await AdminService.getByPage(req);
+      res.status(200).send({
+        message: 'Admin Store Pagination',
         data,
       });
     } catch (error) {

@@ -2,10 +2,10 @@ import { Type } from '@prisma/client';
 
 export type TProduct = {
   id?: string;
-  name?: string;
-  description?: string;
-  weight?: number;
-  price?: number;
+  name: string;
+  description: string;
+  weight: number;
+  price: number;
   createdAt?: Date;
   updatedAt?: Date;
 };

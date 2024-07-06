@@ -93,8 +93,8 @@ model Product {
   description     String            @db.Text
   weight          Float
   price           Float
-  category        Category          @relation(fields: [categoryId], references: [id])
-  categoryId      String
+  category        Category?         @relation(fields: [categoryId], references: [id])
+  categoryId      String?
   ProductImage    ProductImage[]
   Stock           Stock[]
   Cart            Cart[]

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { ProductController } from '@/controllers/product.controller';
+import { blobUploader } from '@/lib/multer';
 
 export class ProductRouter {
   private router: Router;
@@ -13,10 +14,19 @@ export class ProductRouter {
 
   private initializeRoutes(): void {
     this.router.get('/', this.productController.getProduct);
-    this.router.get('/:id', this.productController.getProductById);
-    this.router.post('/', this.productController.createProduct);
-    this.router.patch('/:id', this.productController.editProduct);
+    // this.router.get('/:id', this.productController.getProductById);
+    this.router.post(
+      '/',
+      blobUploader().single('image'),
+      this.productController.createProduct,
+    );
+    this.router.patch(
+      '/:id',
+      blobUploader().single('image'),
+      this.productController.editProduct,
+    );
     this.router.delete('/:id', this.productController.deleteProduct);
+    this.router.get('/images/:id', this.productController.render);
   }
 
   getRouter(): Router {

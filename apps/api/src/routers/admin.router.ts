@@ -13,6 +13,9 @@ export class AdminRouter {
 
   private initializeRoutes(): void {
     this.router.get('/', this.adminController.getAdmin);
+    this.router.get('/:id', this.adminController.getById);
+    this.router.get('/name', this.adminController.getByName);
+    this.router.get('/pages', this.adminController.getByPages);
     this.router.post('/', this.adminController.createStoreAdmin);
     this.router.patch('/:id', this.adminController.editStoreAdmin);
     this.router.delete('/:id', this.adminController.deleteStoreAdmin);

@@ -7,14 +7,49 @@ import { Prisma, Role } from '@prisma/client';
 class AdminService {
   static async getAdmin() {
     const adminData = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-      },
+      select: { id: true, name: true, email: true, role: true },
     });
     return adminData;
+  }
+
+  static async getById(req: Request) {
+    const id = req.params.id;
+    const data = await prisma.user.findUnique({
+      where: { id },
+      select: { id: true, name: true, email: true, role: true },
+    });
+    return data;
+  }
+
+  static async getByName(req: Request) {
+    const name = req.query.name;
+    if (!name || typeof name !== 'string')
+      throw new Error('Invalid search parameter');
+    const data = await prisma.user.findMany({
+      where: { name: { contains: name } },
+      select: { id: true, name: true, email: true, role: true },
+    });
+    if (!data || data.length === 0) throw new Error('User not found');
+    return data;
+  }
+
+  static async getByPage(req: Request) {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const skip = (page - 1) * limit;
+    const adminData = await prisma.user.findMany({
+      skip: skip,
+      take: limit,
+      select: { id: true, name: true, email: true, role: true },
+    });
+    const total = await prisma.user.count();
+    return {
+      data: adminData,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   static async create(req: Request) {
