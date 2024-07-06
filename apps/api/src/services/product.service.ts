@@ -22,6 +22,47 @@ class ProductService {
     return data;
   }
 
+  static async getByName(req: Request) {
+    const name = req.query.name;
+    if (!name || typeof name !== 'string')
+      throw new Error('Invalid search parameter');
+    const data = await prisma.product.findMany({
+      where: { name: { contains: name } },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        ProductImage: { select: { id: true, image: true } },
+      },
+    });
+    if (!data || data.length === 0) throw new Error('Product not found');
+    return data;
+  }
+
+  static async getByPage(req: Request) {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const skip = (page - 1) * limit;
+    const productData = await prisma.product.findMany({
+      skip: skip,
+      take: limit,
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        ProductImage: { select: { id: true, image: true } },
+      },
+    });
+    const total = await prisma.product.count();
+    return {
+      data: productData,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   static async create(req: Request) {
     const { name, description, weight, price } = req.body;
     const { file } = req;

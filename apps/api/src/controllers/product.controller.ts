@@ -16,6 +16,30 @@ export class ProductController {
 
   // async getProductById(req: Request, res: Response, next: NextFunction) {}
 
+  async getByName(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await ProductService.getByName(req);
+      res.status(200).send({
+        message: 'Get Product by name',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getByPage(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await ProductService.getByPage(req);
+      res.status(200).send({
+        message: 'Get Product by pages',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async createProduct(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await ProductService.create(req);
