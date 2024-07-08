@@ -222,7 +222,7 @@ const Store = (props: Props) => {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center items-center gap-5">
+              <div className="flex justify-center items-center gap-5 pt-5">
                 <button className="flex items-center font-bold gap-1 bg-[#11047A] text-white px-5 py-1 rounded-full">
                   <MdNavigateBefore /> Prev
                 </button>
