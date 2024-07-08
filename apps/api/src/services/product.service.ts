@@ -43,7 +43,10 @@ class ProductService {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 5;
     const skip = (page - 1) * limit;
+    const name = String(req.query.name || '');
+
     const productData = await prisma.product.findMany({
+      where: { name: { contains: name } },
       skip: skip,
       take: limit,
       select: {

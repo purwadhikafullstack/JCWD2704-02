@@ -23,6 +23,8 @@ class AdminService {
 
   static async getByName(req: Request) {
     const name = req.query.name;
+    console.log(name);
+
     if (!name || typeof name !== 'string')
       throw new Error('Invalid search parameter');
     const data = await prisma.user.findMany({
@@ -37,11 +39,15 @@ class AdminService {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 5;
     const skip = (page - 1) * limit;
+    const name = String(req.query.name || '');
+
     const adminData = await prisma.user.findMany({
+      where: { name: { contains: name } },
       skip: skip,
       take: limit,
       select: { id: true, name: true, email: true, role: true },
     });
+
     const total = await prisma.user.count();
     return {
       data: adminData,

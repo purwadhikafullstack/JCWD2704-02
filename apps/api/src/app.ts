@@ -12,6 +12,7 @@ import { PORT } from './config';
 // import { SampleRouter } from './routers/sample.router';
 import { ProductRouter } from './routers/product.router';
 import { AdminRouter } from './routers/admin.router';
+import { corsOptions } from './config/index';
 
 export default class App {
   private app: Express;
@@ -24,7 +25,7 @@ export default class App {
   }
 
   private configure(): void {
-    this.app.use(cors());
+    this.app.use(cors(corsOptions));
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
   }

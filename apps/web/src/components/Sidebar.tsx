@@ -16,10 +16,10 @@ const Sidebar = (props: Props) => {
           <IoMdHome /> Dashboard
         </div>
         <div className="flex items-center gap-3 font-bold text-[#2B3674] leading-7 tracking-[-2%] border-r-4 border-[#4318FF]">
-          <IoStorefront className="text-[#4318FF]" /> Store
+          <IoStorefront className="text-[#4318FF]" /> Products
         </div>
         <div className="flex items-center gap-3">
-          <PiUsersThreeFill /> Users
+          <PiUsersThreeFill /> Admins
         </div>
         <div className="flex items-center gap-3">
           <FaUserAlt /> Profile
