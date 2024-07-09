@@ -7,7 +7,7 @@ import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { useDebounce } from 'use-debounce';
 import { fetchUser } from '@/helpers/fetchUser';
 import { TUser } from '@/models/user';
-
+import Link from 'next/link';
 type Props = {};
 
 const Users = (props: Props) => {
@@ -28,6 +28,8 @@ const Users = (props: Props) => {
     }
     getUsers();
   }, [page, limit, value]);
+
+  const isLastPage = users.length < limit;
 
   return (
     <>
@@ -54,9 +56,12 @@ const Users = (props: Props) => {
                   className="bg-[#F4F7FE] rounded-full pl-5 py-1 font-dm-sans text-14px"
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <button className="bg-[#F4F7FE] px-3 text-[#2B3674] font-dm-sans text-14px font-bold rounded-full">
-                  +Store
-                </button>
+                <Link
+                  href={'/dashboard/admin/addAdmin'}
+                  className="bg-[#F4F7FE] px-3 text-[#2B3674] font-dm-sans text-14px font-bold rounded-full flex items-center "
+                >
+                  +Store Admin
+                </Link>
               </div>
               <div>
                 <RxAvatar className="h-7 w-7" />
@@ -105,18 +110,18 @@ const Users = (props: Props) => {
               </Table.Body>
             </Table>
           </div>
-          <div className="flex justify-center items-center gap-5 pt-5">
+          <div className="flex justify-center items-center gap-5 pt-10">
             <button
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
-              className="flex items-center font-bold gap-1 bg-[#11047A] text-white px-5 py-1 rounded-full"
+              className={`flex items-center font-bold gap-1  px-5 py-1 rounded-full ${page === 1 ? 'bg-gray-400 text-gray-200' : 'bg-[#11047A] text-white'}`}
             >
               <MdNavigateBefore /> Prev
             </button>
             <button
               onClick={() => setPage(page + 1)}
-              disabled={users.length < limit}
-              className="flex items-center font-bold gap-1 bg-[#11047A] text-white px-5 py-1 rounded-full"
+              disabled={isLastPage}
+              className={`flex items-center font-bold gap-1 px-5 py-1 rounded-full ${isLastPage ? 'bg-gray-400 text-gray-200' : 'bg-[#11047A] text-white'}`}
             >
               Next <MdNavigateNext />
             </button>

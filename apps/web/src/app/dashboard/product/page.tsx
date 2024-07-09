@@ -6,6 +6,7 @@ import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { fetchProduct } from '@/helpers/fetchProduct';
 import { useDebounce } from 'use-debounce';
 import { TProduct } from '@/models/product';
+import Link from 'next/link';
 type Props = {};
 
 const Store = (props: Props) => {
@@ -26,6 +27,8 @@ const Store = (props: Props) => {
     }
     getProduct();
   }, [page, limit, value]);
+
+  const isLastPage = products.length < limit;
 
   return (
     <>
@@ -53,9 +56,12 @@ const Store = (props: Props) => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <button className="bg-[#F4F7FE] px-3 text-[#2B3674] font-dm-sans text-14px font-bold rounded-full">
+                <Link
+                  href={'/dashboard/product/add'}
+                  className="flex items-center bg-[#F4F7FE] px-3 text-[#2B3674] font-dm-sans text-14px font-bold rounded-full"
+                >
                   +Product
-                </button>
+                </Link>
               </div>
               <div>
                 <RxAvatar className="h-7 w-7" />
@@ -128,14 +134,14 @@ const Store = (props: Props) => {
                 <button
                   onClick={() => setPage(page - 1)}
                   disabled={page === 1}
-                  className="flex items-center font-bold gap-1 bg-[#11047A] text-white px-5 py-1 rounded-full"
+                  className={`flex items-center font-bold gap-1  px-5 py-1 rounded-full ${page === 1 ? 'bg-gray-400 text-gray-200' : 'bg-[#11047A] text-white'}`}
                 >
                   <MdNavigateBefore /> Prev
                 </button>
                 <button
                   onClick={() => setPage(page + 1)}
-                  disabled={products.length < limit}
-                  className="flex items-center font-bold gap-1 bg-[#11047A] text-white px-5 py-1 rounded-full"
+                  disabled={isLastPage}
+                  className={`flex items-center font-bold gap-1 px-5 py-1 rounded-full ${isLastPage ? 'bg-gray-400 text-gray-200' : 'bg-[#11047A] text-white'}`}
                 >
                   Next <MdNavigateNext />
                 </button>
