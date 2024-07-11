@@ -69,6 +69,8 @@ class ProductService {
   static async create(req: Request) {
     const { name, description, weight, price } = req.body;
     const { file } = req;
+    console.log('ini file', file);
+
     const existingProduct = await prisma.product.findFirst({ where: { name } });
     if (existingProduct) throw new Error('Product already exist');
     const buffer = await sharp(req.file?.buffer).png().toBuffer();
@@ -94,8 +96,8 @@ class ProductService {
     const { id } = req.params;
     const { name, description, weight, price } = req.body;
     const { file } = req;
-    const existingProduct = await prisma.product.findFirst({ where: { name } });
-    if (existingProduct) throw new Error('Product already exist');
+    const existingProduct = await prisma.product.findFirst({ where: { id } });
+    if (!existingProduct) throw new Error('Product already exist');
     const weightNumber = Number(weight);
     const priceNumber = Number(price);
     const data: Prisma.ProductUpdateInput = {};
@@ -109,7 +111,6 @@ class ProductService {
         create: { image: buffer },
       };
     }
-
     const editedProduct = await prisma.product.update({
       data,
       where: { id },

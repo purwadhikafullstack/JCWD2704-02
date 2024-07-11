@@ -17,3 +17,13 @@ export async function fetchUser(page: number, limit: number, name: string) {
     console.log(error);
   }
 }
+
+export async function deleteUser(id: string) {
+  const axios = axiosInstance();
+  try {
+    await axios.delete(`/admins/${id}`);
+    alert('data berhasil dihapus');
+  } catch (error) {
+    console.log(error);
+  }
+}

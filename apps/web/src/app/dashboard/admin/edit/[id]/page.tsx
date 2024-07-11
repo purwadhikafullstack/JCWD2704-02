@@ -1,9 +1,36 @@
+'use client';
 import React from 'react';
 import Link from 'next/link';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { axiosInstance } from '@/lib/axios';
+import { AxiosError } from 'axios';
+// import { useParams } from 'next/navigation';
 
-type Props = {};
-
-const EditAdmin = (props: Props) => {
+const EditAdmin = ({ params }: { params: { id: string } }) => {
+  const { id } = params;
+  const initialValues = {
+    name: '',
+    email: '',
+    password: '',
+  };
+  const formik = useFormik({
+    initialValues,
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required('Nama wajib diisi').min(5),
+      email: Yup.string().required('Email wajib diisi').email(),
+      password: Yup.string().required('Password wajib diisi').min(8),
+    }),
+    onSubmit: async (values) => {
+      try {
+        const { data } = await axiosInstance().patch(`/admins/${id}`, values);
+        alert(data.message);
+      } catch (error) {
+        if (error instanceof AxiosError) alert(error.response?.data?.message);
+        else if (error instanceof Error) console.log(error.message);
+      }
+    },
+  });
   return (
     <>
       <section className="bg-[#f4f7fe] w-full h-lvh">

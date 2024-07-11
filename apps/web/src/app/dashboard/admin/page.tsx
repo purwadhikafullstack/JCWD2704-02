@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { RxAvatar } from 'react-icons/rx';
+import { axiosInstance } from '@/lib/axios';
+import { useRouter } from 'next/navigation';
 import { Table } from 'flowbite-react';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import { useDebounce } from 'use-debounce';
-import { fetchUser } from '@/helpers/fetchUser';
+import { fetchUser, deleteUser } from '@/helpers/fetchUser';
 import { TUser } from '@/models/user';
 import Link from 'next/link';
 type Props = {};
@@ -17,15 +19,26 @@ const Users = (props: Props) => {
   const [limit, setLimit] = useState(5);
   const [value] = useDebounce(search, 1000);
 
-  useEffect(() => {
-    async function getUsers() {
-      try {
-        const user = await fetchUser(page, limit, value);
-        setUsers(user.data);
-      } catch (error) {
-        console.log(error);
-      }
+  const router = useRouter();
+
+  async function onClickEdit(id: string) {
+    const axios = axiosInstance();
+    try {
+      const response = await axios.get(`/admins/${id}`);
+      router.push(`/dashboard/admin/edit/${id}`);
+    } catch (error) {
+      console.log(error);
     }
+  }
+  async function getUsers() {
+    try {
+      const user = await fetchUser(page, limit, value);
+      setUsers(user.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(() => {
     getUsers();
   }, [page, limit, value]);
 
@@ -57,7 +70,7 @@ const Users = (props: Props) => {
                   onChange={(e) => setSearch(e.target.value)}
                 />
                 <Link
-                  href={'/dashboard/admin/addAdmin'}
+                  href={'/dashboard/admin/add'}
                   className="bg-[#F4F7FE] px-3 text-[#2B3674] font-dm-sans text-14px font-bold rounded-full flex items-center "
                 >
                   +Store Admin
@@ -91,11 +104,23 @@ const Users = (props: Props) => {
                         <Table.Cell>{user.name}</Table.Cell>
                         <Table.Cell>{user.email}</Table.Cell>
                         <Table.Cell>-</Table.Cell>
-                        <Table.Cell className="font-medium text-red-600">
+                        <Table.Cell
+                          onClick={() => {
+                            deleteUser(user.id);
+                            router.push('/dashboard/admin');
+                          }}
+                          className="font-medium text-red-600 cursor-pointer"
+                        >
                           Delete
                         </Table.Cell>
                         <Table.Cell className="font-medium text-green-600">
-                          Edit
+                          <button
+                            onClick={() => {
+                              onClickEdit(user.id);
+                            }}
+                          >
+                            Edit
+                          </button>
                         </Table.Cell>
                       </Table.Row>
                     );

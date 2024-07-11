@@ -1,9 +1,37 @@
+'use client';
 import React from 'react';
 import Link from 'next/link';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { axiosInstance } from '@/lib/axios';
+import { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 
-type Props = {};
-
-const AddAdmin = (props: Props) => {
+const AddAdmin = () => {
+  const router = useRouter();
+  const initialValues = {
+    name: '',
+    email: '',
+    password: '',
+  };
+  const formik = useFormik({
+    initialValues,
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required('Nama wajib diisi').min(5),
+      email: Yup.string().required('Email wajib diisi').email(),
+      password: Yup.string().required('Password wajib diisi').min(8),
+    }),
+    onSubmit: async (values) => {
+      try {
+        const { data } = await axiosInstance().post('/admins', values);
+        alert(data.message);
+        router.push('/dashboard/admin');
+      } catch (error) {
+        if (error instanceof AxiosError) alert(error.response?.data?.message);
+        else if (error instanceof Error) console.log(error.message);
+      }
+    },
+  });
   return (
     <>
       <section className="bg-[#f4f7fe] w-full h-lvh">
@@ -16,47 +44,50 @@ const AddAdmin = (props: Props) => {
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                 Add Admin
               </h1>
-              <form className="space-y-4 md:space-y-4" action="">
+              <form
+                className="space-y-4 md:space-y-4"
+                onSubmit={formik.handleSubmit}
+              >
                 <div>
                   <label
-                    htmlFor=""
+                    htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
                     Name
                   </label>
                   <input
                     type="text"
-                    name="name"
                     id="name"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                    {...formik.getFieldProps('name')}
                   />
                 </div>
                 <div>
                   <label
-                    htmlFor=""
+                    htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
                     email
                   </label>
                   <input
                     type="text"
-                    name="email"
                     id="email"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                    {...formik.getFieldProps('email')}
                   />
                 </div>
                 <div>
                   <label
-                    htmlFor=""
+                    htmlFor="password"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
                     Password
                   </label>
                   <input
                     type="password"
-                    name="password"
                     id="password"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                    {...formik.getFieldProps('password')}
                   />
                 </div>
                 <div className="pt-1">
