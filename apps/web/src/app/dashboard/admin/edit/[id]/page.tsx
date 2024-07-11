@@ -1,21 +1,38 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { axiosInstance } from '@/lib/axios';
 import { AxiosError } from 'axios';
-// import { useParams } from 'next/navigation';
 
 const EditAdmin = ({ params }: { params: { id: string } }) => {
   const { id } = params;
-  const initialValues = {
+  const [initialValues, setInitialValues] = useState({
     name: '',
     email: '',
     password: '',
-  };
+  });
+  useEffect(() => {
+    async function fetchDetail() {
+      try {
+        const response = await axiosInstance().get(`/admins/${id}`);
+        const dataAdmin = response.data.data;
+        setInitialValues({
+          name: dataAdmin.name,
+          email: dataAdmin.email,
+          password: dataAdmin.password,
+        });
+      } catch (error) {
+        if (error instanceof AxiosError) throw error.response?.data?.message;
+        else if (error instanceof Error) console.log(error.message);
+      }
+    }
+    fetchDetail();
+  }, [id]);
   const formik = useFormik({
     initialValues,
+    enableReinitialize: true,
     validationSchema: Yup.object().shape({
       name: Yup.string().required('Nama wajib diisi').min(5),
       email: Yup.string().required('Email wajib diisi').email(),
@@ -31,6 +48,7 @@ const EditAdmin = ({ params }: { params: { id: string } }) => {
       }
     },
   });
+
   return (
     <>
       <section className="bg-[#f4f7fe] w-full h-lvh">
@@ -43,10 +61,13 @@ const EditAdmin = ({ params }: { params: { id: string } }) => {
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                 Edit Admin
               </h1>
-              <form className="space-y-4 md:space-y-4" action="">
+              <form
+                className="space-y-4 md:space-y-4"
+                onSubmit={formik.handleSubmit}
+              >
                 <div>
                   <label
-                    htmlFor=""
+                    htmlFor="name"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
                     Name
@@ -56,11 +77,19 @@ const EditAdmin = ({ params }: { params: { id: string } }) => {
                     name="name"
                     id="name"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.name && formik.errors.name ? (
+                    <div className="text-red-600 text-sm">
+                      {formik.errors.name}
+                    </div>
+                  ) : null}
                 </div>
                 <div>
                   <label
-                    htmlFor=""
+                    htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
                     email
@@ -70,7 +99,15 @@ const EditAdmin = ({ params }: { params: { id: string } }) => {
                     name="email"
                     id="email"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                  />
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />{' '}
+                  {formik.touched.email && formik.errors.email ? (
+                    <div className="text-red-600 text-sm">
+                      {formik.errors.email}
+                    </div>
+                  ) : null}
                 </div>
                 <div>
                   <label
@@ -84,7 +121,15 @@ const EditAdmin = ({ params }: { params: { id: string } }) => {
                     name="password"
                     id="password"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
+                  {formik.touched.password && formik.errors.password ? (
+                    <div className="text-red-600 text-sm">
+                      {formik.errors.password}
+                    </div>
+                  ) : null}
                 </div>
                 <div>
                   <label

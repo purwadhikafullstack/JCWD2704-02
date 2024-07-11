@@ -10,17 +10,14 @@ import { useDebounce } from 'use-debounce';
 import { fetchUser, deleteUser } from '@/helpers/fetchUser';
 import { TUser } from '@/models/user';
 import Link from 'next/link';
-type Props = {};
 
-const Users = (props: Props) => {
+const Users = () => {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState<TUser[]>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [value] = useDebounce(search, 1000);
-
   const router = useRouter();
-
   async function onClickEdit(id: string) {
     const axios = axiosInstance();
     try {
@@ -46,7 +43,7 @@ const Users = (props: Props) => {
 
   return (
     <>
-      <section className="bg-[#F4F7FE] flex w-full top-[49px] left-[290px]">
+      <section className="bg-[#F4F7FE] flex w-full top-[49px] left-[290px] h-lvh">
         <Sidebar />
         <div className="py-6 px-10 w-full">
           <div className="flex justify-between items-center">

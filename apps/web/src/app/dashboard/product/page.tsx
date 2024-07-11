@@ -3,19 +3,29 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { RxAvatar } from 'react-icons/rx';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
-import { fetchProduct } from '@/helpers/fetchProduct';
+import { fetchProduct, deleteProduct } from '@/helpers/fetchProduct';
 import { useDebounce } from 'use-debounce';
 import { TProduct } from '@/models/product';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-type Props = {};
+import { axiosInstance } from '@/lib/axios';
 
-const Store = (props: Props) => {
+const Store = () => {
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<TProduct[]>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [value] = useDebounce(search, 1000);
-
+  const router = useRouter();
+  async function onClickEdit(id: string) {
+    const axios = axiosInstance();
+    try {
+      const response = await axios.get(`/products/${id}`);
+      router.push(`/dashboard/product/edit/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(() => {
     async function getProduct() {
       try {
@@ -27,9 +37,7 @@ const Store = (props: Props) => {
     }
     getProduct();
   }, [page, limit, value]);
-
   const isLastPage = products.length < limit;
-
   return (
     <>
       <section className="bg-[#F4F7FE] flex w-full top-[49px] left-[290px]">
@@ -119,10 +127,21 @@ const Store = (props: Props) => {
                         </div>
                       </div>
                       <div className="flex justify-between items-center px-4">
-                        <button className="text-14px text-customBlue font-bold">
+                        <button
+                          className="text-14px text-customBlue font-bold"
+                          onClick={() => {
+                            deleteProduct(product.id);
+                            router.push('/dashboard/product');
+                          }}
+                        >
                           Delete Product
                         </button>
-                        <button className="bg-[#11047A] text-white px-5 py-1 rounded-full">
+                        <button
+                          className="bg-[#11047A] text-white px-5 py-1 rounded-full"
+                          onClick={() => {
+                            onClickEdit(product.id);
+                          }}
+                        >
                           Edit
                         </button>
                       </div>

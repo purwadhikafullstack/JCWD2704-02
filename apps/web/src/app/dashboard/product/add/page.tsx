@@ -153,7 +153,7 @@ const AddProduct = (props: Props) => {
                 ></textarea>
               </div>
 
-              <div className="flex items-center justify-center">
+              <div className="col-span-full">
                 {imagePreview ? (
                   <div className="">
                     <img

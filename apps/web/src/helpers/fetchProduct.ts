@@ -17,3 +17,12 @@ export async function fetchProduct(page: number, limit: number, name: string) {
     console.log(error);
   }
 }
+
+export async function deleteProduct(id: string) {
+  const axios = axiosInstance();
+  try {
+    await axios.delete(`/products/${id}`);
+  } catch (error) {
+    console.log(error);
+  }
+}

@@ -1,9 +1,14 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { axiosInstance } from '@/lib/axios';
+import { AxiosError } from 'axios';
 
-type Props = {};
-
-const EditProduct = (props: Props) => {
+const EditProduct = ({ params }: { params: { id: string } }) => {
+  const { id } = params;
+  const [initial, setInitialValues] = useState('');
   return (
     <>
       <section className="bg-[#f4f7fe]">
