@@ -14,7 +14,17 @@ export class ProductController {
     }
   }
 
-  // async getProductById(req: Request, res: Response, next: NextFunction) {}
+  async getProductById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await ProductService.getDetail(req);
+      res.status(200).send({
+        message: 'Get Product detail',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 
   async getByName(req: Request, res: Response, next: NextFunction) {
     try {
@@ -64,7 +74,16 @@ export class ProductController {
     }
   }
 
-  async deleteProduct(req: Request, res: Response, next: NextFunction) {}
+  async deleteProduct(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await ProductService.deleteProduct(req);
+      res.status(201).send({
+        message: 'Product delete success',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 
   async render(req: Request, res: Response, next: NextFunction) {
     try {

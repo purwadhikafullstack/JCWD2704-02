@@ -5,8 +5,10 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { axiosInstance } from '@/lib/axios';
 import { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 
 const EditAdmin = ({ params }: { params: { id: string } }) => {
+  const router = useRouter();
   const { id } = params;
   const [initialValues, setInitialValues] = useState({
     name: '',
@@ -42,6 +44,7 @@ const EditAdmin = ({ params }: { params: { id: string } }) => {
       try {
         const { data } = await axiosInstance().patch(`/admins/${id}`, values);
         alert(data.message);
+        router.push('/dashboard/admin');
       } catch (error) {
         if (error instanceof AxiosError) alert(error.response?.data?.message);
         else if (error instanceof Error) console.log(error.message);

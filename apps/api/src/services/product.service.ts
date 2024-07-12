@@ -11,6 +11,7 @@ class ProductService {
         id: true,
         name: true,
         price: true,
+        isDeleted: false,
         ProductImage: {
           select: {
             id: true,
@@ -32,10 +33,26 @@ class ProductService {
         id: true,
         name: true,
         price: true,
+        description: true,
         ProductImage: { select: { id: true, image: true } },
       },
     });
     if (!data || data.length === 0) throw new Error('Product not found');
+    return data;
+  }
+
+  static async getDetail(req: Request) {
+    const { id } = req.params;
+    const data = await prisma.product.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        description: true,
+        ProductImage: { select: { id: true, image: true } },
+      },
+    });
     return data;
   }
 
@@ -44,9 +61,8 @@ class ProductService {
     const limit = parseInt(req.query.limit as string) || 5;
     const skip = (page - 1) * limit;
     const name = String(req.query.name || '');
-
     const productData = await prisma.product.findMany({
-      where: { name: { contains: name } },
+      where: { name: { contains: name }, isDeleted: false },
       skip: skip,
       take: limit,
       select: {
@@ -67,58 +83,72 @@ class ProductService {
   }
 
   static async create(req: Request) {
-    const { name, description, weight, price } = req.body;
-    const { file } = req;
-    console.log('ini file', file);
-
-    const existingProduct = await prisma.product.findFirst({ where: { name } });
-    if (existingProduct) throw new Error('Product already exist');
-    const buffer = await sharp(req.file?.buffer).png().toBuffer();
-    const weightNumber = Number(weight);
-    const priceNumber = Number(price);
-    if (!file) throw new Error('no image uploaded');
-    const data: Prisma.ProductCreateInput = {
-      name,
-      description,
-      weight: weightNumber,
-      price: priceNumber,
-      ProductImage: {
-        create: { image: buffer },
-      },
-    };
-    const product = await prisma.product.create({
-      data,
+    await prisma.$transaction(async (prisma) => {
+      const { name, description, weight, price } = req.body;
+      const { file } = req;
+      const existingProduct = await prisma.product.findFirst({
+        where: { name },
+      });
+      if (existingProduct) throw new Error('Product already exist');
+      const buffer = await sharp(req.file?.buffer).png().toBuffer();
+      const weightNumber = Number(weight);
+      const priceNumber = Number(price);
+      if (!file) throw new Error('no image uploaded');
+      const data: Prisma.ProductCreateInput = {
+        name,
+        description,
+        weight: weightNumber,
+        price: priceNumber,
+        ProductImage: {
+          create: { image: buffer },
+        },
+      };
+      const product = await prisma.product.create({
+        data,
+      });
+      return product;
     });
-    return product;
   }
 
   static async edit(req: Request) {
-    const { id } = req.params;
-    const { name, description, weight, price } = req.body;
-    const { file } = req;
-    const existingProduct = await prisma.product.findFirst({ where: { id } });
-    if (!existingProduct) throw new Error('Product already exist');
-    const weightNumber = Number(weight);
-    const priceNumber = Number(price);
-    const data: Prisma.ProductUpdateInput = {};
-    if (name) data.name = req.body.name;
-    if (description) data.description = req.body.description;
-    if (weight) data.weight = weightNumber;
-    if (price) data.price = priceNumber;
-    if (file) {
-      const buffer = await sharp(req.file?.buffer).png().toBuffer();
-      data.ProductImage = {
-        create: { image: buffer },
-      };
-    }
-    const editedProduct = await prisma.product.update({
-      data,
-      where: { id },
+    await prisma.$transaction(async (prisma) => {
+      const { id } = req.params;
+      const { name, description, weight, price } = req.body;
+      const { file } = req;
+      const existingProduct = await prisma.product.findFirst({ where: { id } });
+      if (!existingProduct) throw new Error('Product already exist');
+      const weightNumber = Number(weight);
+      const priceNumber = Number(price);
+      const data: Prisma.ProductUpdateInput = {};
+      if (name) data.name = req.body.name;
+      if (description) data.description = req.body.description;
+      if (weight) data.weight = weightNumber;
+      if (price) data.price = priceNumber;
+      if (file) {
+        const buffer = await sharp(req.file?.buffer).png().toBuffer();
+        data.ProductImage = {
+          create: { image: buffer },
+        };
+      }
+      const editedProduct = await prisma.product.update({
+        data,
+        where: { id },
+      });
+      return editedProduct;
     });
-    return editedProduct;
   }
 
-  static async deleteProduct(req: Request) {}
+  static async deleteProduct(req: Request) {
+    console.log('masuk ke service');
+
+    await prisma.$transaction(async (prisma) => {
+      const { id } = req.params;
+      await prisma.product.update({
+        where: { id },
+        data: { isDeleted: true },
+      });
+    });
+  }
 
   static async render(req: Request) {
     const data = await prisma.productImage.findUnique({

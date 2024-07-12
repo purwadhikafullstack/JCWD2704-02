@@ -24,7 +24,6 @@ class AdminService {
   static async getByName(req: Request) {
     const name = req.query.name;
     console.log(name);
-
     if (!name || typeof name !== 'string')
       throw new Error('Invalid search parameter');
     const data = await prisma.user.findMany({

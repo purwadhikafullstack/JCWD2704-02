@@ -95,6 +95,7 @@ model Product {
   price           Float
   category        Category?         @relation(fields: [categoryId], references: [id])
   categoryId      String?
+  isDeleted       Boolean           @default(false)
   ProductImage    ProductImage[]
   Stock           Stock[]
   Cart            Cart[]

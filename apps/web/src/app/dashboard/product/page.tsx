@@ -27,20 +27,12 @@ const Store = () => {
     }
   }
   useEffect(() => {
-    async function getProduct() {
-      try {
-        const product = await fetchProduct(page, limit, value);
-        setProducts(product.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getProduct();
+    fetchProduct(page, limit, value, setProducts);
   }, [page, limit, value]);
   const isLastPage = products.length < limit;
   return (
     <>
-      <section className="bg-[#F4F7FE] flex w-full top-[49px] left-[290px]">
+      <section className="bg-[#F4F7FE] flex w-full min-h-lvh top-[49px] left-[290px]">
         <Sidebar />
         <div className="py-6 px-10 w-full">
           {/* header, nanti dipisah component lagi */}
@@ -83,7 +75,7 @@ const Store = () => {
                 <img
                   src="/carousel.jpeg"
                   alt="carousel"
-                  className="h-[400px] w-full rounded-xl"
+                  className="h-[480px] w-full rounded-xl"
                 />
               </div>
               <div className="flex justify-between items-center py-8">
@@ -130,8 +122,13 @@ const Store = () => {
                         <button
                           className="text-14px text-customBlue font-bold"
                           onClick={() => {
-                            deleteProduct(product.id);
-                            router.push('/dashboard/product');
+                            deleteProduct(
+                              product.id,
+                              page,
+                              limit,
+                              value,
+                              setProducts,
+                            );
                           }}
                         >
                           Delete Product

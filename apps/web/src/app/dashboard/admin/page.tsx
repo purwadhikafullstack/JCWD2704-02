@@ -27,16 +27,9 @@ const Users = () => {
       console.log(error);
     }
   }
-  async function getUsers() {
-    try {
-      const user = await fetchUser(page, limit, value);
-      setUsers(user.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
   useEffect(() => {
-    getUsers();
+    fetchUser(page, limit, value, setUsers);
   }, [page, limit, value]);
 
   const isLastPage = users.length < limit;
@@ -103,8 +96,7 @@ const Users = () => {
                         <Table.Cell>-</Table.Cell>
                         <Table.Cell
                           onClick={() => {
-                            deleteUser(user.id);
-                            router.push('/dashboard/admin');
+                            deleteUser(user.id, page, limit, value, setUsers);
                           }}
                           className="font-medium text-red-600 cursor-pointer"
                         >

@@ -5,6 +5,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { axiosInstance } from '@/lib/axios';
 import { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 
 type Props = {};
 
@@ -15,10 +16,9 @@ const AddProduct = (props: Props) => {
     weight: 0,
     description: '',
   };
-
   const imageRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
+  const router = useRouter();
   const formik = useFormik({
     initialValues,
     validationSchema: Yup.object().shape({
@@ -29,14 +29,13 @@ const AddProduct = (props: Props) => {
     }),
     onSubmit: async (values) => {
       try {
-        console.log('ini valuesss', values);
-
         const { data } = await axiosInstance().post('/products', values, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
         alert(data.message);
+        router.push('/dashboard/product');
       } catch (error) {
         if (error instanceof AxiosError) alert(error.response?.data?.message);
         else if (error instanceof Error) console.log(error.message);
