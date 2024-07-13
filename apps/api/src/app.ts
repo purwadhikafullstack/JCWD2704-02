@@ -27,7 +27,6 @@ export default class App {
 
   private configure(): void {
     this.app.use(cors(corsOptions));
-    this.app.use(cors(corsOptions));
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
   }
