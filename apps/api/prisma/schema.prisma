@@ -24,13 +24,15 @@ model User {
   profilePicture Bytes?        @db.LongBlob
   isVerified     Boolean?      @default(false)
   role           Role?
-  referralCode   String        @unique
+  referralCode   String?       @unique
   referredCode   String?
   Address        Address[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   VoucherUser    VoucherUser[]
   Store          Store[]
+  Cart           Cart[]
+  Order          Order[]
 
   @@index([name, email])
   @@map("users")
@@ -46,6 +48,7 @@ model Address {
   postalCode Int
   latitude   Float
   longitude  Float
+  isPrimay   Boolean  @default(false)
   Order      Order[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -53,21 +56,12 @@ model Address {
   @@map("addresses")
 }
 
-model Province {
-  id       Int    @id @default(autoincrement())
-  province String
-  City     City[]
-
-  @@map("provinces")
-}
-
 model City {
-  id         Int      @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
+  province   String
   type       String
-  city       String
+  cityName   String
   postalCode String
-  province   Province @relation(fields: [provinceId], references: [id])
-  provinceId Int
 
   Address Address[]
   Store   Store[]
@@ -137,7 +131,6 @@ model ProductImage {
 }
 
 model Stock {
-  id        String   @id @default(cuid())
   product   Product  @relation(fields: [productId], references: [id])
   productId String
   store     Store    @relation(fields: [storeId], references: [id])
@@ -145,17 +138,22 @@ model Stock {
   quantity  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Cart      Cart[]
 
+  @@id([productId, storeId])
   @@map("stocks")
 }
 
 model Cart {
   id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
   product   Product  @relation(fields: [productId], references: [id])
   productId String
   store     Store    @relation(fields: [storeId], references: [id])
   storeId   String
   quantity  Int
+  stock     Stock    @relation(fields: [productId, storeId], references: [productId, storeId])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -171,20 +169,31 @@ enum Status {
   cancelled
 }
 
+enum Paid {
+  manual
+  gateway
+}
+
 model Order {
-  id           String      @id @default(cuid())
-  invoice      String
-  totalPrice   Float
-  address      Address     @relation(fields: [addressId], references: [id])
-  addressId    String
-  shippingCost Float
-  shippedAt    DateTime?
-  paymentProof Bytes?      @db.LongBlob
-  paidAt       DateTime?
-  status       Status
-  OrderItem    OrderItem[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id                String      @id @default(cuid())
+  invoice           String      @unique
+  user              User        @relation(fields: [userId], references: [id])
+  userId            String
+  totalPrice        Float
+  address           Address     @relation(fields: [addressId], references: [id])
+  addressId         String
+  shippingCost      Float?
+  shippedAt         DateTime?
+  paidType          Paid
+  snap_token        String?
+  snap_redirect_url String?
+  payment_method    String?
+  paymentProof      Bytes?      @db.LongBlob
+  paidAt            DateTime?
+  status            Status
+  OrderItem         OrderItem[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
   @@map("orders")
 }
