@@ -18,3 +18,4 @@ const serviceAccount = {
 
 // Use serviceAccount object as needed
 console.log(serviceAccount);
+export default serviceAccount;
