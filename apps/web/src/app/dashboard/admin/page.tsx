@@ -15,7 +15,7 @@ const Users = () => {
   const [search, setSearch] = useState('');
   const [users, setUsers] = useState<TUser[]>([]);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
   const [value] = useDebounce(search, 1000);
   const router = useRouter();
   async function onClickEdit(id: string) {
@@ -38,15 +38,15 @@ const Users = () => {
     <>
       <section className="bg-[#F4F7FE] flex w-full top-[49px] left-[290px] h-lvh">
         <Sidebar />
-        <div className="py-6 px-10 w-full">
+        <div className="py-6 px-10 w-full flex flex-col min-h-screen">
           <div className="flex justify-between items-center">
             {/* ini dikiri */}
             <div>
               <div className="font-dm-sans text-base font-medium leading-6 text-left text-[#707EAE]">
-                Dashboard/users
+                Dashboard/Admin Store
               </div>
               <div className="font-dm-sans text-display-small font-bold text-left">
-                Users
+                Admin Store
               </div>
             </div>
             {/* ini dikanan */}
@@ -71,60 +71,63 @@ const Users = () => {
               </div>
             </div>
           </div>
-          <div className="overflow-x-auto pt-5">
-            <Table>
-              <Table.Head>
-                <Table.HeadCell>no</Table.HeadCell>
-                <Table.HeadCell>name</Table.HeadCell>
-                <Table.HeadCell>email</Table.HeadCell>
-                <Table.HeadCell>store loc</Table.HeadCell>
-                <Table.HeadCell className="sr-only">
-                  <span>delete</span>
-                </Table.HeadCell>
-                <Table.HeadCell className="sr-only">
-                  <span>edit</span>
-                </Table.HeadCell>
-              </Table.Head>
-              <Table.Body className="divide-y">
-                {Array.isArray(users) && users.length > 0 ? (
-                  users.map((user, index) => {
-                    return (
-                      <Table.Row key={user.id} className="bg-white">
-                        <Table.Cell>{index + 1}</Table.Cell>
-                        <Table.Cell>{user.name}</Table.Cell>
-                        <Table.Cell>{user.email}</Table.Cell>
-                        <Table.Cell>-</Table.Cell>
-                        <Table.Cell
-                          onClick={() => {
-                            deleteUser(user.id, page, limit, value, setUsers);
-                          }}
-                          className="font-medium text-red-600 cursor-pointer"
-                        >
-                          Delete
-                        </Table.Cell>
-                        <Table.Cell className="font-medium text-green-600">
-                          <button
+          <div className="flex-grow">
+            <div className="overflow-x-auto pt-5">
+              <Table>
+                <Table.Head>
+                  <Table.HeadCell>no</Table.HeadCell>
+                  <Table.HeadCell>name</Table.HeadCell>
+                  <Table.HeadCell>email</Table.HeadCell>
+                  <Table.HeadCell>store loc</Table.HeadCell>
+                  <Table.HeadCell className="sr-only">
+                    <span>delete</span>
+                  </Table.HeadCell>
+                  <Table.HeadCell className="sr-only">
+                    <span>edit</span>
+                  </Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y">
+                  {Array.isArray(users) && users.length > 0 ? (
+                    users.map((user, index) => {
+                      return (
+                        <Table.Row key={user.id} className="bg-white">
+                          <Table.Cell>{index + 1}</Table.Cell>
+                          <Table.Cell>{user.name}</Table.Cell>
+                          <Table.Cell>{user.email}</Table.Cell>
+                          <Table.Cell>-</Table.Cell>
+                          <Table.Cell
                             onClick={() => {
-                              onClickEdit(user.id);
+                              deleteUser(user.id, page, limit, value, setUsers);
                             }}
+                            className="font-medium text-red-600 cursor-pointer"
                           >
-                            Edit
-                          </button>
-                        </Table.Cell>
-                      </Table.Row>
-                    );
-                  })
-                ) : (
-                  <Table.Row className="bg-white">
-                    <Table.Cell colSpan={6} className="text-center">
-                      No users found.
-                    </Table.Cell>
-                  </Table.Row>
-                )}
-              </Table.Body>
-            </Table>
+                            Delete
+                          </Table.Cell>
+                          <Table.Cell className="font-medium text-green-600">
+                            <button
+                              onClick={() => {
+                                onClickEdit(user.id);
+                              }}
+                            >
+                              Edit
+                            </button>
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    })
+                  ) : (
+                    <Table.Row className="bg-white">
+                      <Table.Cell colSpan={6} className="text-center">
+                        No users found.
+                      </Table.Cell>
+                    </Table.Row>
+                  )}
+                </Table.Body>
+              </Table>
+            </div>
           </div>
-          <div className="flex justify-center items-center gap-5 pt-10">
+
+          <div className="flex justify-center items-center gap-5 pb-14">
             <button
               onClick={() => setPage(page - 1)}
               disabled={page === 1}

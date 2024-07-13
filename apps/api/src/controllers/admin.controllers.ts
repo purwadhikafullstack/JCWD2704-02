@@ -3,11 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 import AdminService from '@/services/admin.service';
 
 export class AdminController {
-  async getAdmin(req: Request, res: Response, next: NextFunction) {
+  async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await AdminService.getAdmin();
+      const data = await AdminService.getAll(req);
       res.status(200).send({
-        message: 'All Admin Store',
+        message: 'Admin Store Pagination',
         data,
       });
     } catch (error) {
@@ -20,30 +20,6 @@ export class AdminController {
       const data = await AdminService.getById(req);
       res.status(200).send({
         message: 'Admin Store by their ID',
-        data,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getByName(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data = await AdminService.getByName(req);
-      res.status(200).send({
-        message: 'Admin Store by filter name',
-        data,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getByPages(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data = await AdminService.getByPage(req);
-      res.status(200).send({
-        message: 'Admin Store Pagination',
         data,
       });
     } catch (error) {

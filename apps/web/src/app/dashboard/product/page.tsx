@@ -14,7 +14,7 @@ const Store = () => {
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<TProduct[]>([]);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
   const [value] = useDebounce(search, 1000);
   const router = useRouter();
   async function onClickEdit(id: string) {
@@ -69,34 +69,31 @@ const Store = () => {
             </div>
           </div>
           {/* content-utama */}
-          <div className="py-10 flex justify-between gap-5 w-full">
+          <div className="py-2.5 flex justify-between gap-5 w-full">
             <div className="w-full">
-              <div>
+              {/* <div>
                 <img
                   src="/carousel.jpeg"
                   alt="carousel"
-                  className="h-[480px] w-full rounded-xl"
+                  className="h-[500px] w-full rounded-xl"
                 />
-              </div>
+              </div> */}
               <div className="flex justify-between items-center py-8">
                 <div className="font-dm-sans text-24px font-bold text-[#2B3674]">
                   All Products
                 </div>
-                <div className="flex gap-8 font-bold text-customBlue text-14px items-center">
-                  <div className="bg-white px-5 py-1 rounded-full">Buah</div>
-                  <div>Sayur</div>
-                  <div>Daging Sapi</div>
-                  <div>Daging Ayam</div>
+                <div className="font-bold text-customBlue text-14px items-center bg-white px-5 py-1 rounded-full">
+                  More Category
                 </div>
               </div>
               {/* card buat product */}
-              <div className="flex flex-wrap gap-5">
+              <div className="flex flex-wrap justify-between gap-10 pb-5">
                 {/* ini cardnya */}
                 {products.map((product) => {
                   return (
                     <div
                       key={product.id}
-                      className="w-[280px] h-[370px] bg-white rounded-xl"
+                      className="w-[280px] h-[355px] bg-white rounded-xl"
                     >
                       <div className="flex justify-center items-center py-5">
                         <img
@@ -107,20 +104,20 @@ const Store = () => {
                       </div>
                       <div className="flex justify-between items-center gap-1 px-4 pb-8">
                         <div>
-                          <div className="font-dm-sans font-bold text-18px text-[#1B2559] truncate w-[110px]">
+                          <div className="font-dm-sans font-bold text-base text-[#1B2559] truncate w-[110px]">
                             {product.name}
                           </div>
                           <div className="font-dm-sans font-medium text-14px text-[#A3AED0] truncate w-[110px]">
                             Category
                           </div>
                         </div>
-                        <div className="font-dm-sans font-bold text-18px text-[#1B2559]">
+                        <div className="font-dm-sans font-bold text-base text-[#1B2559]">
                           IDR {product.price}
                         </div>
                       </div>
                       <div className="flex justify-between items-center px-4">
                         <button
-                          className="text-14px text-customBlue font-bold"
+                          className="text-base text-customBlue font-semibold"
                           onClick={() => {
                             deleteProduct(
                               product.id,
@@ -134,7 +131,7 @@ const Store = () => {
                           Delete Product
                         </button>
                         <button
-                          className="bg-[#11047A] text-white px-5 py-1 rounded-full"
+                          className="bg-[#11047A] text-white px-5 py-0.5 rounded-full font-semibold"
                           onClick={() => {
                             onClickEdit(product.id);
                           }}

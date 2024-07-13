@@ -5,60 +5,9 @@ import { TProduct } from '@/models/product.model';
 import { Prisma } from '@prisma/client';
 
 class ProductService {
-  static async getAll() {
-    const data = await prisma.product.findMany({
-      select: {
-        id: true,
-        name: true,
-        price: true,
-        isDeleted: false,
-        ProductImage: {
-          select: {
-            id: true,
-            image: true,
-          },
-        },
-      },
-    });
-    return data;
-  }
-
-  static async getByName(req: Request) {
-    const name = req.query.name;
-    if (!name || typeof name !== 'string')
-      throw new Error('Invalid search parameter');
-    const data = await prisma.product.findMany({
-      where: { name: { contains: name } },
-      select: {
-        id: true,
-        name: true,
-        price: true,
-        description: true,
-        ProductImage: { select: { id: true, image: true } },
-      },
-    });
-    if (!data || data.length === 0) throw new Error('Product not found');
-    return data;
-  }
-
-  static async getDetail(req: Request) {
-    const { id } = req.params;
-    const data = await prisma.product.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        price: true,
-        description: true,
-        ProductImage: { select: { id: true, image: true } },
-      },
-    });
-    return data;
-  }
-
-  static async getByPage(req: Request) {
+  static async getByAll(req: Request) {
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 5;
+    const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
     const name = String(req.query.name || '');
     const productData = await prisma.product.findMany({
@@ -80,6 +29,21 @@ class ProductService {
       total,
       totalPages: Math.ceil(total / limit),
     };
+  }
+
+  static async getDetail(req: Request) {
+    const { id } = req.params;
+    const data = await prisma.product.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        description: true,
+        ProductImage: { select: { id: true, image: true } },
+      },
+    });
+    return data;
   }
 
   static async create(req: Request) {

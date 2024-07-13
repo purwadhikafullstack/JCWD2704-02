@@ -2,11 +2,11 @@ import ProductService from '@/services/product.service';
 import { Request, Response, NextFunction } from 'express';
 
 export class ProductController {
-  async getProduct(req: Request, res: Response, next: NextFunction) {
+  async getByAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await ProductService.getAll();
+      const data = await ProductService.getByAll(req);
       res.status(200).send({
-        message: 'All Product',
+        message: 'Get Product by pages',
         data,
       });
     } catch (error) {
@@ -19,30 +19,6 @@ export class ProductController {
       const data = await ProductService.getDetail(req);
       res.status(200).send({
         message: 'Get Product detail',
-        data,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getByName(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data = await ProductService.getByName(req);
-      res.status(200).send({
-        message: 'Get Product by name',
-        data,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getByPage(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data = await ProductService.getByPage(req);
-      res.status(200).send({
-        message: 'Get Product by pages',
         data,
       });
     } catch (error) {
