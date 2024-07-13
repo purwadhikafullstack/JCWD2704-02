@@ -24,7 +24,7 @@ model User {
   profilePicture Bytes?        @db.LongBlob
   isVerified     Boolean?      @default(false)
   role           Role?
-  referralCode   String        @unique
+  referralCode   String?       @unique
   referredCode   String?
   Address        Address[]
   createdAt      DateTime      @default(now())
@@ -53,24 +53,14 @@ model Address {
   @@map("addresses")
 }
 
-model Province {
-  id       Int    @id @default(autoincrement())
-  province String
-  City     City[]
-
-  @@map("provinces")
-}
-
 model City {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
+  province   String
   type       String
-  city       String
+  cityName   String
   postalCode String
-  province   Province @relation(fields: [provinceId], references: [id])
-  provinceId Int
-
-  Address Address[]
-  Store   Store[]
+  Address    Address[]
+  Store      Store[]
 
   @@map("cities")
 }
@@ -103,8 +93,9 @@ model Product {
   description     String            @db.Text
   weight          Float
   price           Float
-  category        Category          @relation(fields: [categoryId], references: [id])
-  categoryId      String
+  category        Category?         @relation(fields: [categoryId], references: [id])
+  categoryId      String?
+  isDeleted       Boolean           @default(false)
   ProductImage    ProductImage[]
   Stock           Stock[]
   Cart            Cart[]
