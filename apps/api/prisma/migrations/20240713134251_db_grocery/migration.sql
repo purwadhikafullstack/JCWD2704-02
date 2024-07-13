@@ -8,7 +8,7 @@ CREATE TABLE `users` (
     `profilePicture` LONGBLOB NULL,
     `isVerified` BOOLEAN NULL DEFAULT false,
     `role` ENUM('user', 'superAdmin', 'storeAdmin') NULL,
-    `referralCode` VARCHAR(191) NOT NULL,
+    `referralCode` VARCHAR(191) NULL,
     `referredCode` VARCHAR(191) NULL,
     `latitude` DOUBLE NULL,
     `longitude` DOUBLE NULL,
@@ -35,20 +35,12 @@ CREATE TABLE `addresses` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `provinces` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `province` VARCHAR(191) NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `cities` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `province` VARCHAR(191) NOT NULL,
     `type` VARCHAR(191) NOT NULL,
-    `city` VARCHAR(191) NOT NULL,
+    `cityName` VARCHAR(191) NOT NULL,
     `postalCode` VARCHAR(191) NOT NULL,
-    `provinceId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -76,7 +68,8 @@ CREATE TABLE `products` (
     `description` TEXT NOT NULL,
     `weight` DOUBLE NOT NULL,
     `price` DOUBLE NOT NULL,
-    `categoryId` VARCHAR(191) NOT NULL,
+    `categoryId` VARCHAR(191) NULL,
+    `isDeleted` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -211,16 +204,13 @@ ALTER TABLE `addresses` ADD CONSTRAINT `addresses_userId_fkey` FOREIGN KEY (`use
 ALTER TABLE `addresses` ADD CONSTRAINT `addresses_cityId_fkey` FOREIGN KEY (`cityId`) REFERENCES `cities`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `cities` ADD CONSTRAINT `cities_provinceId_fkey` FOREIGN KEY (`provinceId`) REFERENCES `provinces`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `stores` ADD CONSTRAINT `stores_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `stores` ADD CONSTRAINT `stores_cityId_fkey` FOREIGN KEY (`cityId`) REFERENCES `cities`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `products` ADD CONSTRAINT `products_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `categories`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `products` ADD CONSTRAINT `products_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `categories`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `product_images` ADD CONSTRAINT `product_images_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
