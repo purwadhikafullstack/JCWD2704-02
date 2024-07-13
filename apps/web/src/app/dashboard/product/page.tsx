@@ -87,7 +87,7 @@ const Store = () => {
                 </div>
               </div>
               {/* card buat product */}
-              <div className="flex flex-wrap justify-between gap-10 pb-5">
+              <div className="flex flex-wrap gap-[45.5px] pb-5">
                 {/* ini cardnya */}
                 {products.map((product) => {
                   return (
