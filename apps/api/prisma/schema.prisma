@@ -18,14 +18,17 @@ enum Role {
 
 model User {
   id             String        @id @default(cuid())
-  name           String
+  googleId       String?
+  name           String?
   email          String        @unique
-  password       String
+  password       String?
   profilePicture Bytes?        @db.LongBlob
   isVerified     Boolean?      @default(false)
   role           Role?
   referralCode   String        @unique
   referredCode   String?
+  latitude       Float?
+  longitude      Float?
   Address        Address[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -44,8 +47,6 @@ model Address {
   city       City     @relation(fields: [cityId], references: [id])
   cityId     Int
   postalCode Int
-  latitude   Float
-  longitude  Float
   Order      Order[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
