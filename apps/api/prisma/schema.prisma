@@ -18,14 +18,17 @@ enum Role {
 
 model User {
   id             String        @id @default(cuid())
-  name           String
+  googleId       String?
+  name           String?
   email          String        @unique
-  password       String
+  password       String?
   profilePicture Bytes?        @db.LongBlob
   isVerified     Boolean?      @default(false)
   role           Role?
   referralCode   String?       @unique
   referredCode   String?
+  latitude       Float?
+  longitude      Float?
   Address        Address[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -46,8 +49,6 @@ model Address {
   city       City     @relation(fields: [cityId], references: [id])
   cityId     Int
   postalCode Int
-  latitude   Float
-  longitude  Float
   isPrimay   Boolean  @default(false)
   Order      Order[]
   createdAt  DateTime @default(now())
@@ -57,14 +58,13 @@ model Address {
 }
 
 model City {
-  id         Int    @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   province   String
   type       String
   cityName   String
   postalCode String
-
-  Address Address[]
-  Store   Store[]
+  Address    Address[]
+  Store      Store[]
 
   @@map("cities")
 }
@@ -97,8 +97,9 @@ model Product {
   description     String            @db.Text
   weight          Float
   price           Float
-  category        Category          @relation(fields: [categoryId], references: [id])
-  categoryId      String
+  category        Category?         @relation(fields: [categoryId], references: [id])
+  categoryId      String?
+  isDeleted       Boolean           @default(false)
   ProductImage    ProductImage[]
   Stock           Stock[]
   Cart            Cart[]

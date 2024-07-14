@@ -2,9 +2,8 @@ import axios, { AxiosInstance } from 'axios';
 import { getCookie } from 'cookies-next';
 
 export function axiosInstance(): AxiosInstance {
-  const token = getCookie('access_token') || '';
+  const token = getCookie('access-token') || '';
   return axios.create({
-    // baseURL: process.env.NEXT_PUBLIC_API_BASED_VPS,
     baseURL: 'http://localhost:8000',
     headers: {
       Authorization: 'Bearer ' + token,

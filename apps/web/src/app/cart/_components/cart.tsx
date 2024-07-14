@@ -7,6 +7,7 @@ import { axiosInstance } from '@/lib/axios';
 import CartTable from './cartItem';
 import { IoCartOutline } from 'react-icons/io5';
 import { BiSolidDiscount } from 'react-icons/bi';
+import { IoReceiptOutline } from 'react-icons/io5';
 
 interface CartItem {
   id: string;
@@ -38,7 +39,7 @@ const Cart: React.FC = () => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [totalQuantity, setTotalQuantity] = useState<number>(0);
 
-  const userId = 'clyk3kw1j0001x82k2rskxtfh';
+  const userId = 'clykbw3cf000011p30uoi12du';
 
   const fetchCart = async () => {
     try {
@@ -145,7 +146,10 @@ const Cart: React.FC = () => {
       </div>
       <div className="rounded-xl bg-white w-full md:w-[500px] h-full p-5 shadow-md border border-gray-200">
         <div className="flex flex-col gap-3">
-          <div className="font-semibold text-2xl">Order Summary</div>
+          <div className="font-semibold text-2xl flex gap-3 items-center">
+            <IoReceiptOutline />
+            Order Summary
+          </div>
           <hr />
           <div className="flex flex-col bg-blue-100 rounded-xl border border-blue-400 p-4 gap-1">
             <div className="flex justify-between items-center text-blue-700 ">
