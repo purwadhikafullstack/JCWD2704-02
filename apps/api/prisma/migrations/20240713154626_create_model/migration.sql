@@ -28,6 +28,7 @@ CREATE TABLE `addresses` (
     `address` VARCHAR(191) NOT NULL,
     `cityId` INTEGER NOT NULL,
     `postalCode` INTEGER NOT NULL,
+    `isPrimay` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -97,19 +98,19 @@ CREATE TABLE `product_images` (
 
 -- CreateTable
 CREATE TABLE `stocks` (
-    `id` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
     `storeId` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`productId`, `storeId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `carts` (
     `id` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
     `storeId` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
@@ -123,16 +124,22 @@ CREATE TABLE `carts` (
 CREATE TABLE `orders` (
     `id` VARCHAR(191) NOT NULL,
     `invoice` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
     `totalPrice` DOUBLE NOT NULL,
     `addressId` VARCHAR(191) NOT NULL,
-    `shippingCost` DOUBLE NOT NULL,
+    `shippingCost` DOUBLE NULL,
     `shippedAt` DATETIME(3) NULL,
+    `paidType` ENUM('manual', 'gateway') NOT NULL,
+    `snap_token` VARCHAR(191) NULL,
+    `snap_redirect_url` VARCHAR(191) NULL,
+    `payment_method` VARCHAR(191) NULL,
     `paymentProof` LONGBLOB NULL,
     `paidAt` DATETIME(3) NULL,
     `status` ENUM('waitingPayment', 'waitingConfirmation', 'processed', 'shipped', 'confirmed', 'cancelled') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `orders_invoice_key`(`invoice`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -222,10 +229,19 @@ ALTER TABLE `stocks` ADD CONSTRAINT `stocks_productId_fkey` FOREIGN KEY (`produc
 ALTER TABLE `stocks` ADD CONSTRAINT `stocks_storeId_fkey` FOREIGN KEY (`storeId`) REFERENCES `stores`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `carts` ADD CONSTRAINT `carts_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `carts` ADD CONSTRAINT `carts_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `carts` ADD CONSTRAINT `carts_storeId_fkey` FOREIGN KEY (`storeId`) REFERENCES `stores`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `carts` ADD CONSTRAINT `carts_productId_storeId_fkey` FOREIGN KEY (`productId`, `storeId`) REFERENCES `stocks`(`productId`, `storeId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `orders` ADD CONSTRAINT `orders_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_addressId_fkey` FOREIGN KEY (`addressId`) REFERENCES `addresses`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

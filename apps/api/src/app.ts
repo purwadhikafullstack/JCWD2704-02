@@ -8,6 +8,9 @@ import express, {
   Router,
 } from 'express';
 import cors from 'cors';
+import { CartRouter } from './routers/cart.router';
+import { OrderRouter } from './routers/order.router';
+// import { SampleRouter } from './routers/sample.router';
 import { PORT } from './config';
 import { UserRouter } from './routers/user.router';
 // import { SampleRouter } from './routers/sample.router';
@@ -44,6 +47,16 @@ export default class App {
     );
 
     // error
+    // this.app.use(
+    //   (err: Error, req: Request, res: Response, next: NextFunction) => {
+    //     if (req.path.includes('/api/')) {
+    //       console.error('Error : ', err.stack);
+    //       res.status(500).send('Error !');
+    //     } else {
+    //       next();
+    //     }
+    //   },
+    // );
     this.app.use(
       (err: Error, req: Request, res: Response, next: NextFunction) => {
         if (req.path.includes('/v1')) {
@@ -57,6 +70,9 @@ export default class App {
   }
 
   private routes(): void {
+    // const sampleRouter = new SampleRouter();
+    const cartRouter = new CartRouter();
+    const orderRouter = new OrderRouter();
     const userRouter = new UserRouter();
     // const sampleRouter = new SampleRouter();
     const productRouter = new ProductRouter();
@@ -66,6 +82,9 @@ export default class App {
       res.send(`Hello, Purwadhika Student API!`);
     });
 
+    // this.app.use('/api/samples', sampleRouter.getRouter());
+    this.app.use('/cart', cartRouter.getRouter());
+    this.app.use('/order', orderRouter.getRouter());
     this.app.use('/v1', userRouter.getRouter());
     // this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/products', productRouter.getRouter());
