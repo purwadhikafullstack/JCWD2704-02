@@ -18,8 +18,8 @@ import { AdminRouter } from './routers/admin.router';
 import { corsOptions } from './config/index';
 import { StoreRouter } from './routers/store.router';
 import { StockRouter } from './routers/stock.router';
-import { VoucherRouter } from './routers/voucher.router';
 import { DiscountRouter } from './routers/discount.router';
+import { VoucherRouter } from './routers/voucher.router';
 
 export default class App {
   private app: Express;
@@ -82,7 +82,6 @@ export default class App {
     this.app.use('/v1', userRouter.getRouter());
     this.app.use('/products', productRouter.getRouter());
     this.app.use('/admins', adminRouter.getRouter());
-    this.app.use('/store', storeRouter.getRouter());
     this.app.use('/store', storeRouter.getRouter());
     this.app.use('/category', categoryRouter.getRouter());
     this.app.use('/stocks', stockRouter.getRouter());
