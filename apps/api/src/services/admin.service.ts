@@ -58,7 +58,7 @@ class AdminService {
   }
 
   static async create(req: Request) {
-    await prisma.$transaction(async (prisma) => {
+    await prisma.$transaction(async (prisma: any) => {
       const email: string = req.body.email;
       const name: string = req.body.name;
       const password: string = req.body.password;

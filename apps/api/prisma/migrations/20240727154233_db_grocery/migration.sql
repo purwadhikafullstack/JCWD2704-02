@@ -245,11 +245,7 @@ CREATE TABLE `voucher_users` (
 ALTER TABLE `addresses` ADD CONSTRAINT `addresses_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-<<<<<<<< HEAD:apps/api/prisma/migrations/20240721100835_db_grocery/migration.sql
-ALTER TABLE `stores` ADD CONSTRAINT `stores_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-========
 ALTER TABLE `store` ADD CONSTRAINT `store_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
->>>>>>>> 20ff80e4f235b09f69e1c489fe1782434cec4429:apps/api/prisma/migrations/20240727140743_db_grocery/migration.sql
 
 -- AddForeignKey
 ALTER TABLE `products` ADD CONSTRAINT `products_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `categories`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

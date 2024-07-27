@@ -3,7 +3,7 @@
 import { getStoreByStoreId, updateStore } from '@/helpers/fetchStore';
 import { TStore } from '@/models/store.model';
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'next/navigation'; // atau useRouter jika tidak menggunakan app directory
+import { useParams } from 'next/navigation';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { axiosInstance } from '@/lib/axios';
@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function EditStoreComponent() {
-  const { id } = useParams(); // atau gunakan useRouter untuk mengambil ID dari URL params
+  const { id } = useParams();
   const [storeData, setStoreData] = useState<TStore | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
@@ -26,14 +26,14 @@ export default function EditStoreComponent() {
 
   const formik = useFormik({
     initialValues: {
-      name: storeData?.name || '',
-      address: storeData?.address || '',
-      latitude: storeData?.latitude?.toString() || '',
-      longitude: storeData?.longitude?.toString() || '',
-      type: storeData?.type || '',
-      city: storeData?.city || '',
-      province: storeData?.province || '',
-      postalCode: storeData?.postalCode?.toString() || '',
+      name: '',
+      address: '',
+      latitude: '',
+      longitude: '',
+      type: '',
+      city: '',
+      province: '',
+      postalCode: '',
     },
     enableReinitialize: true,
     validationSchema: Yup.object().shape({
@@ -52,6 +52,21 @@ export default function EditStoreComponent() {
       }
     },
   });
+
+  useEffect(() => {
+    if (storeData) {
+      formik.setValues({
+        name: storeData.name || '',
+        address: storeData.address || '',
+        latitude: storeData.latitude?.toString() || '',
+        longitude: storeData.longitude?.toString() || '',
+        type: storeData.type || '',
+        city: storeData.city || '',
+        province: storeData.province || '',
+        postalCode: storeData.postalCode?.toString() || '',
+      });
+    }
+  }, [storeData]);
 
   useEffect(() => {
     const loader = new Loader({
@@ -260,7 +275,7 @@ export default function EditStoreComponent() {
                     htmlFor="city"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
-                    City Name
+                    City
                   </label>
                   <input
                     type="text"
@@ -297,50 +312,19 @@ export default function EditStoreComponent() {
                     {...formik.getFieldProps('postalCode')}
                   />
                 </div>
-                <div className="pt-1 hidden">
-                  <label
-                    htmlFor="latitude"
-                    className="block mb-2 text-sm font-medium text-gray-900"
+                <div className="flex justify-between">
+                  <Link
+                    href="/dashboard/store"
+                    className="inline-flex items-center justify-center w-full px-4 py-2 mr-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300"
                   >
-                    Latitude
-                  </label>
-                  <input
-                    type="text"
-                    id="latitude"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                    {...formik.getFieldProps('latitude')}
-                    readOnly
-                  />
-                </div>
-                <div className="pt-1 hidden">
-                  <label
-                    htmlFor="longitude"
-                    className="block mb-2 text-sm font-medium text-gray-900"
-                  >
-                    Longitude
-                  </label>
-                  <input
-                    type="text"
-                    id="longitude"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                    {...formik.getFieldProps('longitude')}
-                    readOnly
-                  />
-                </div>
-
-                <div className="flex justify-between items-center">
+                    Cancel
+                  </Link>
                   <button
                     type="submit"
-                    className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                    className="inline-flex items-center justify-center w-full px-4 py-2 ml-2 text-sm font-medium text-center text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300"
                   >
                     Submit
                   </button>
-                  <Link
-                    href="/dashboard/store"
-                    className="ml-4 text-primary-600 hover:underline"
-                  >
-                    Back
-                  </Link>
                 </div>
               </form>
             </div>

@@ -47,10 +47,7 @@ export async function getStoreByStoreId(
   const axios = axiosInstance();
   try {
     const response = await axios.get(`/store/${id}`);
-    console.log('====================================');
-    console.log('response', response);
-    console.log('====================================');
-    const data = response.data.data;
+    const data = response.data;
     return setData(data);
   } catch (error) {
     console.log('====================================');
@@ -104,7 +101,6 @@ export async function availableStores(
   const axios = axiosInstance();
   try {
     const response = await axios.get(`/store/available-store`);
-
     setData(response.data);
   } catch (error) {
     console.log('====================================');
