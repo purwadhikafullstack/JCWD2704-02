@@ -56,31 +56,8 @@ const Sidebar = () => {
           <PiUsersThreeFill className={iconClasses('/dashboard/admin')} />
           Admins
         </Link>
-        <Link
-          href={'/dashboard/store'}
-          className={linkClasses('/dashboard/store')}
-        >
-          <FaStore className={iconClasses('/dashboard/store')} /> Store
-        </Link>
-
-        <Link
-          href={'/dashboard/stock'}
-          className={linkClasses('/dashboard/stock')}
-        >
-          <BsBoxFill className={iconClasses('/dashboard/stock')} /> Stock
-        </Link>
-        <Link
-          href={'/dashboard/discount'}
-          className={linkClasses('/dashboard/discount')}
-        >
-          <MdDiscount className={iconClasses('/dashboard/discount')} /> Discount
-        </Link>
-        <Link
-          href={'/dashboard/voucher'}
-          className={linkClasses('/dashboard/voucher')}
-        >
-          <IoTicketSharp className={iconClasses('/dashboard/voucher')} />{' '}
-          Voucher
+        <Link href={'/dashboard/store'} className="flex items-center gap-3">
+          <FaStore /> Store
         </Link>
         <div className="flex items-center gap-3">
           <FaUserAlt /> Profile

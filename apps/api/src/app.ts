@@ -83,6 +83,7 @@ export default class App {
     this.app.use('/products', productRouter.getRouter());
     this.app.use('/admins', adminRouter.getRouter());
     this.app.use('/store', storeRouter.getRouter());
+    this.app.use('/store', storeRouter.getRouter());
     this.app.use('/category', categoryRouter.getRouter());
     this.app.use('/stocks', stockRouter.getRouter());
     this.app.use('/discounts', discountRouter.getRouter());
