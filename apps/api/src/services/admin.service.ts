@@ -100,7 +100,7 @@ class AdminService {
     const id = req.params.id;
     const { email, name, password, storeId: newStoreId } = req.body;
 
-    const updatedUser = await prisma.$transaction(async (prisma) => {
+    const updatedUser = await prisma.$transaction(async (prisma: any) => {
       const user = await prisma.user.findUnique({
         where: { id },
         include: { Store: true },
@@ -148,7 +148,7 @@ class AdminService {
   static async deleteUser(req: Request): Promise<void> {
     const id = req.params.id;
 
-    await prisma.$transaction(async (prisma) => {
+    await prisma.$transaction(async (prisma: any) => {
       const user = await prisma.user.findUnique({
         where: { id },
         include: { Store: true }, // Sertakan store untuk mendapatkan informasi toko
