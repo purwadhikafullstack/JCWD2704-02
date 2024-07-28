@@ -2,13 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { IoMdHome } from 'react-icons/io';
-import { IoStorefront, IoLogOutSharp, IoTicketSharp } from 'react-icons/io5';
+import { IoStorefront, IoLogOutSharp } from 'react-icons/io5';
 import { PiUsersThreeFill } from 'react-icons/pi';
 import { FaUserAlt, FaStore } from 'react-icons/fa';
 import { BiSolidCategory } from 'react-icons/bi';
 import { RiShoppingBasket2Fill } from 'react-icons/ri';
-import { MdDiscount } from 'react-icons/md';
-import { BsBoxFill } from 'react-icons/bs';
 import Link from 'next/link';
 
 const Sidebar = () => {
@@ -28,7 +26,7 @@ const Sidebar = () => {
     pathname === path ? 'text-[#4318FF]' : '';
 
   return (
-    <div className="w-[300px] bg-white">
+    <div className="w-48 bg-white">
       <h1 className="py-5 h-24 flex items-center justify-center border-b-4 text-[#2B3674] border-[#F4F7FE] font-bold font-poppins text-26px font-700 text-left">
         BBH <span className="font-normal">STORE</span>
       </h1>

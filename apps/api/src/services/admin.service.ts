@@ -20,7 +20,7 @@ class AdminService {
         name: true,
         email: true,
         role: true,
-        Store: {
+        store: {
           select: {
             name: true,
           },
@@ -47,7 +47,7 @@ class AdminService {
         name: true,
         email: true,
         role: true,
-        Store: {
+        store: {
           select: {
             name: true,
           },
@@ -77,7 +77,7 @@ class AdminService {
         password: hashed,
         role,
         isVerified: true,
-        Store: {
+        store: {
           connect: {
             id: storeId,
           },
@@ -103,7 +103,7 @@ class AdminService {
     const updatedUser = await prisma.$transaction(async (prisma: any) => {
       const user = await prisma.user.findUnique({
         where: { id },
-        include: { Store: true },
+        include: { store: true },
       });
 
       if (!user) throw { message: 'User not found' };
@@ -123,10 +123,10 @@ class AdminService {
 
       console.log('Updated User:', updatedUser);
 
-      if (user.Store && user.Store.length > 0) {
-        console.log('Updating old store to isChosen: false', user.Store[0].id);
+      if (user.store && user.store.length > 0) {
+        console.log('Updating old store to isChosen: false', user.store[0].id);
         await prisma.store.update({
-          where: { id: user.Store[0].id },
+          where: { id: user.store[0].id },
           data: { isChosen: false, userId: 'superAdmin' },
         });
       }
@@ -151,16 +151,16 @@ class AdminService {
     await prisma.$transaction(async (prisma: any) => {
       const user = await prisma.user.findUnique({
         where: { id },
-        include: { Store: true }, // Sertakan store untuk mendapatkan informasi toko
+        include: { store: true }, // Sertakan store untuk mendapatkan informasi toko
       });
 
       if (!user) {
         throw new Error('User not found');
       }
 
-      if (user.Store && user.Store.length > 0) {
+      if (user.store && user.store.length > 0) {
         await prisma.store.update({
-          where: { id: user.Store[0].id },
+          where: { id: user.store[0].id },
           data: { isChosen: false, userId: 'superAdmin' },
         });
       }

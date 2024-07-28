@@ -67,6 +67,7 @@ CREATE TABLE `store` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `store_userId_key`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -155,6 +156,7 @@ CREATE TABLE `orders` (
     `id` VARCHAR(191) NOT NULL,
     `invoice` VARCHAR(191) NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
+    `storeId` VARCHAR(191) NOT NULL,
     `totalPrice` DOUBLE NOT NULL,
     `addressId` VARCHAR(191) NOT NULL,
     `shippingCost` DOUBLE NULL,
@@ -165,6 +167,9 @@ CREATE TABLE `orders` (
     `payment_method` VARCHAR(191) NULL,
     `paymentProof` LONGBLOB NULL,
     `paidAt` DATETIME(3) NULL,
+    `processedAt` DATETIME(3) NULL,
+    `confirmedAt` DATETIME(3) NULL,
+    `cancelledAt` DATETIME(3) NULL,
     `status` ENUM('waitingPayment', 'waitingConfirmation', 'processed', 'shipped', 'confirmed', 'cancelled') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -178,7 +183,6 @@ CREATE TABLE `order_items` (
     `id` VARCHAR(191) NOT NULL,
     `orderId` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
-    `storeId` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
     `price` DOUBLE NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -245,11 +249,7 @@ CREATE TABLE `voucher_users` (
 ALTER TABLE `addresses` ADD CONSTRAINT `addresses_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-<<<<<<<< HEAD:apps/api/prisma/migrations/20240721145241_db_grocery/migration.sql
-ALTER TABLE `stores` ADD CONSTRAINT `stores_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-========
 ALTER TABLE `store` ADD CONSTRAINT `store_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
->>>>>>>> 580fcdeba7a5a93d1bc350c5ee0d93769ca63923:apps/api/prisma/migrations/20240727154233_db_grocery/migration.sql
 
 -- AddForeignKey
 ALTER TABLE `products` ADD CONSTRAINT `products_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `categories`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -288,6 +288,9 @@ ALTER TABLE `carts` ADD CONSTRAINT `carts_productId_storeId_fkey` FOREIGN KEY (`
 ALTER TABLE `orders` ADD CONSTRAINT `orders_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `orders` ADD CONSTRAINT `orders_storeId_fkey` FOREIGN KEY (`storeId`) REFERENCES `store`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_addressId_fkey` FOREIGN KEY (`addressId`) REFERENCES `addresses`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -295,9 +298,6 @@ ALTER TABLE `order_items` ADD CONSTRAINT `order_items_orderId_fkey` FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE `order_items` ADD CONSTRAINT `order_items_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `order_items` ADD CONSTRAINT `order_items_storeId_fkey` FOREIGN KEY (`storeId`) REFERENCES `store`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `product_discounts` ADD CONSTRAINT `product_discounts_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
