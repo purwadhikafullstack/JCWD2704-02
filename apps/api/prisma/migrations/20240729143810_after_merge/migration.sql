@@ -197,7 +197,7 @@ CREATE TABLE `product_discounts` (
     `description` VARCHAR(191) NOT NULL,
     `productId` VARCHAR(191) NOT NULL,
     `storeId` VARCHAR(191) NOT NULL,
-    `stockId` VARCHAR(191) NOT NULL,
+    `stockId` VARCHAR(191) NULL,
     `type` ENUM('percentage', 'nominal') NULL,
     `value` DOUBLE NULL,
     `category` ENUM('buyGet', 'discount') NOT NULL,
@@ -306,7 +306,7 @@ ALTER TABLE `product_discounts` ADD CONSTRAINT `product_discounts_productId_fkey
 ALTER TABLE `product_discounts` ADD CONSTRAINT `product_discounts_storeId_fkey` FOREIGN KEY (`storeId`) REFERENCES `store`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `product_discounts` ADD CONSTRAINT `product_discounts_stockId_fkey` FOREIGN KEY (`stockId`) REFERENCES `stocks`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `product_discounts` ADD CONSTRAINT `product_discounts_stockId_fkey` FOREIGN KEY (`stockId`) REFERENCES `stocks`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `vouchers` ADD CONSTRAINT `vouchers_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `products`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
