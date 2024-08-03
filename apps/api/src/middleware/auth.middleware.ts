@@ -11,11 +11,13 @@ export const validateToken = (
   next: NextFunction,
 ) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '') || '';
-    const decode = verify(token, SECRET_KEY) as TDecode;
-    console.log(decode, 'decode');
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    const decode = verify(token!, SECRET_KEY) as TDecode;
     if (decode.type != 'access_token') throw new Error('invalid token');
     req.user = decode.user;
+
+    // console.log(req.user, 'cccccc');
+
     next();
   } catch (error) {
     next(error);
@@ -30,18 +32,14 @@ export const validateRefreshToken = (
   try {
     //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..mo-HEWiMC96FXI-fX3r0rYJgBaveQ8svZdAjDJFewYg
     const token = req.headers.authorization?.replace('Bearer ', '');
-    console.log(token, 'token', SECRET_KEY);
-    if (token) {
-      const decode = verify(token, SECRET_KEY) as TDecode;
+    const decode = verify(token!, SECRET_KEY) as TDecode;
+    if (decode.type != 'refresh_token') throw new Error('invalid token ----');
+    req.user = decode.user;
 
-      if (decode.type != 'access_token') throw new Error('invalid token');
-      req.user = decode.user;
-      return next();
-    }
-    throw new Error('token not found');
+    // console.log(req.user, 'cccccc');
+
+    next();
   } catch (error) {
-    console.log(error);
-
     next(error);
   }
 };

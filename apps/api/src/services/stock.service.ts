@@ -60,7 +60,7 @@ class StockService {
             stock.ProductDiscount.forEach((discount) => {
               const discountValue = discount.value ?? 0;
               if (discount.type === 'percentage') {
-                finalPrice -= finalPrice * (discountValue / 100);
+                finalPrice -= finalPrice * discountValue;
               } else if (discount.type === 'nominal') {
                 finalPrice -= discountValue;
               }
@@ -176,7 +176,9 @@ class StockService {
           storeId,
           stockId: updatedStock.id,
           quantityChange: Number(quantity),
-          reason: 'Stock increased',
+          // reason: 'Stock increased',
+          changeType: 'in',
+          reason: 'restock',
         },
       });
 
@@ -197,7 +199,9 @@ class StockService {
         storeId,
         stockId: newStock.id,
         quantityChange: Number(quantity),
-        reason: 'New stock created',
+        // reason: 'New stock created',
+        changeType: 'in',
+        reason: 'newStock',
       },
     });
 
@@ -228,7 +232,9 @@ class StockService {
         storeId: existingStock.storeId,
         stockId: id,
         quantityChange,
-        reason,
+        // reason,
+        changeType: 'in',
+        reason: 'restock',
       },
     });
 
