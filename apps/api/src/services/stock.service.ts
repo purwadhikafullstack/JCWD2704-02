@@ -43,9 +43,6 @@ class StockService {
         },
       },
     });
-
-    console.log('Stock Data:', JSON.stringify(stockData, null, 2));
-
     const updatedStocks = await prisma.$transaction(async (prisma) => {
       return Promise.all(
         stockData.map(async (stock) => {
@@ -82,11 +79,6 @@ class StockService {
         }),
       );
     });
-
-    console.log(
-      'Updated Stock with Discounts:',
-      JSON.stringify(updatedStocks, null, 2),
-    );
 
     const total = await prisma.stock.count({
       where: {
