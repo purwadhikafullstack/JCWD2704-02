@@ -10,12 +10,363 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
+enum Role {
+  user
+  superAdmin
+  storeAdmin
+}
+
+model User {
+  id             String        @id @default(cuid())
+  googleId       String?
+  name           String?
+  email          String        @unique
+  password       String?
+  profilePicture Bytes?        @db.LongBlob
+  isVerified     Boolean?      @default(false)
+  role           Role?
+  referralCode   String?       @unique
+  referredCode   String?
+  latitude       Float?
+  longitude      Float?
+  Address        Address[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  VoucherUser    VoucherUser[]
+  store          Store?
+  Cart           Cart[]
+  Order          Order[]
+
+  @@index([name, email])
+  @@map("users")
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  name       String?
+  address    String
+  postalCode Int
+  city       String
+  type       String
+  province   String
+  latitude   Float?
+  longitude  Float?
+  isChosen   Boolean  @default(false)
+  isDefault  Boolean  @default(false)
+  Order      Order[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("addresses")
+}
+
+model City {
+  id         Int    @id @default(autoincrement())
+  province   String
+  type       String
+  cityName   String
+  postalCode String
+
+  @@map("cities")
+}
+
+model Store {
+  id              String            @id @default(cuid())
+  name            String
+  user            User              @relation(fields: [userId], references: [id])
+  userId          String            @unique
+  isChosen        Boolean           @default(false)
+  address         String
+  city            String
+  type            String
+  province        String
+  postalCode      Int
+  latitude        Float
+  longitude       Float
+  isDeleted       Boolean           @default(false)
+  Stock           Stock[]
+  StockHistory    StockHistory[]
+  Cart            Cart[]
+  // OrderItem       OrderItem[]
+  ProductDiscount ProductDiscount[]
+  Voucher         Voucher[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  Order           Order[]
+
+  @@map("store")
+}
+
+model Product {
+  id              String            @id @default(cuid())
+  name            String
+  description     String            @db.Text
+  weight          Float
+  price           Float
+  category        Category?         @relation(fields: [categoryId], references: [id])
+  categoryId      String?
+  isDeleted       Boolean           @default(false)
+  ProductImage    ProductImage[]
+  Stock           Stock[]
+  StockHistory    StockHistory[]
+  Cart            Cart[]
+  OrderItem       OrderItem[]
+  ProductDiscount ProductDiscount[]
+  Voucher         Voucher[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  stockHistoryId  String?
+
+  @@map("products")
+}
+
+model Category {
+  id        String    @id @default(cuid())
   name      String
-  code      String   @unique
+  image     Bytes?    @db.LongBlob
+  isDeleted Boolean   @default(false)
+  Product   Product[]
+
+  @@map("categories")
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  image     Bytes    @db.LongBlob
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("samples") // if you want to use snake_case format
+  @@map("product_images")
+}
+
+model Stock {
+  id              String            @id @default(cuid())
+  product         Product           @relation(fields: [productId], references: [id])
+  productId       String
+  store           Store             @relation(fields: [storeId], references: [id])
+  storeId         String
+  quantity        Int
+  priceDiscount   Int?
+  isDeleted       Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  Cart            Cart[]
+  StockHistory    StockHistory[]
+  ProductDiscount ProductDiscount[] @relation("StockDiscount")
+
+  @@unique([productId, storeId])
+  @@map("stocks")
+}
+
+enum StockChangeType {
+  in
+  out
+}
+
+enum StockChangeReason {
+  restock
+  newStock
+  orderCancellation
+  orderPlacement
+  other
+}
+
+model StockHistory {
+  id             String            @id @default(cuid())
+  quantityChange Int
+  changeType     StockChangeType
+  reason         StockChangeReason
+  isDeleted      Boolean           @default(false)
+  Product        Product?          @relation(fields: [productId], references: [id])
+  productId      String?
+  Stock          Stock?            @relation(fields: [stockId], references: [id])
+  stockId        String?
+  Store          Store?            @relation(fields: [storeId], references: [id])
+  storeId        String?
+  Order          Order?            @relation(fields: [orderId], references: [id])
+  orderId        String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@map("stock_histories")
+}
+
+model Cart {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  quantity  Int
+  stock     Stock?   @relation(fields: [stockId], references: [id])
+  stockId   String?
+  // stock     Stock?   @relation(fields: [productId, storeId], references: [productId, storeId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("carts")
+}
+
+enum Status {
+  waitingPayment
+  waitingConfirmation
+  processed
+  shipped
+  confirmed
+  cancelled
+}
+
+enum Paid {
+  manual
+  gateway
+}
+
+enum UpdatedBy {
+  user
+  superAdmin
+  storeAdmin
+  system
+}
+
+model Order {
+  id                String         @id @default(cuid())
+  invoice           String         @unique
+  user              User           @relation(fields: [userId], references: [id])
+  userId            String
+  store             Store          @relation(fields: [storeId], references: [id])
+  storeId           String
+  totalPrice        Float
+  address           Address        @relation(fields: [addressId], references: [id])
+  addressId         String
+  shippingCost      Float?
+  shippedAt         DateTime?
+  shippedBy         UpdatedBy?
+  paidType          Paid
+  snap_token        String?
+  snap_redirect_url String?
+  payment_method    String?
+  expiry_time       DateTime?
+  paymentProof      Bytes?         @db.LongBlob
+  paidAt            DateTime?
+  checkedAt         DateTime?
+  checkedBy         UpdatedBy?
+  processedAt       DateTime?
+  confirmedAt       DateTime?
+  confirmedBy       UpdatedBy?
+  cancelledAt       DateTime?
+  cancelledBy       UpdatedBy?
+  status            Status
+  OrderItem         OrderItem[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  StockHistory      StockHistory[]
+  discountPrice     Float?
+  voucher           Voucher?       @relation(fields: [voucherId], references: [id])
+  voucherId         String?
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id                String           @id @default(cuid())
+  order             Order            @relation(fields: [orderId], references: [id])
+  orderId           String
+  product           Product          @relation(fields: [productId], references: [id])
+  productId         String
+  // store     Store    @relation(fields: [storeId], references: [id])
+  // storeId   String
+  quantity          Int
+  get               Int?
+  price             Float
+  discountPrice     Float?
+  normalPrice       Float?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  productDiscount   ProductDiscount? @relation(fields: [productDiscountId], references: [id])
+  productDiscountId String?
+
+  @@map("order_items")
+}
+
+enum Type {
+  percentage
+  nominal
+}
+
+enum CategoryDisc {
+  buyGet
+  discount
+}
+
+enum CategoryVoucher {
+  shippingCost
+  totalPurchase
+  product
+}
+
+model ProductDiscount {
+  id          String       @id @default(cuid())
+  description String
+  product     Product      @relation(fields: [productId], references: [id])
+  productId   String
+  store       Store        @relation(fields: [storeId], references: [id])
+  storeId     String
+  stock       Stock?       @relation("StockDiscount", fields: [stockId], references: [id])
+  stockId     String?
+  type        Type?
+  value       Float?
+  category    CategoryDisc
+  startDate   DateTime
+  endDate     DateTime
+  isDeleted   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  OrderItem   OrderItem[]
+
+  @@map("product_discounts")
+}
+
+model Voucher {
+  id               String          @id @default(cuid())
+  voucherCode      String
+  description      String
+  product          Product?        @relation(fields: [productId], references: [id])
+  productId        String?
+  store            Store           @relation(fields: [storeId], references: [id])
+  storeId          String
+  category         CategoryVoucher
+  type             Type?
+  value            Float?
+  maxDiscount      Float?
+  minTransaction   Int?
+  minTotalPurchase Float?
+  isValid          Boolean         @default(false)
+  startDate        DateTime
+  endDate          DateTime
+  VoucherUser      VoucherUser[]
+  isDeleted        Boolean         @default(false)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  Order            Order[]
+
+  @@map("vouchers")
+}
+
+model VoucherUser {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  voucher   Voucher  @relation(fields: [voucherId], references: [id])
+  voucherId String
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("voucher_users")
 }
