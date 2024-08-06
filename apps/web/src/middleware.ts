@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
   const { pathname } = request.nextUrl;
 
-  const isLogin = await fetch('http://localhost:8000/v1/v3', {
+  const isLogin = await fetch('http://localhost:8000/api/v1/v3', {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${refresh_token}`,
@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
   const decode = token ? (jwtDecode(token) as { user: TUser }) : undefined;
 
   const hasCart =
-    Array.isArray(decode?.user?.Cart) && decode.user.Cart.length > 0;
+    decode?.user?.Cart && Object.keys(decode.user.Cart).length > 0;
   const isCustomer = decode?.user?.role === 'user' ? true : false;
   const isSuperAdmin = decode?.user?.role === 'superAdmin' ? true : false;
   const isStoreAdmin = decode?.user?.role === 'storeAdmin' ? true : false;
@@ -47,10 +47,10 @@ export async function middleware(request: NextRequest) {
   } else if (
     isLogin &&
     (isSuperAdmin || isStoreAdmin) &&
-    (pathname == '/cart' ||
+    (pathname == '/' ||
+      pathname == '/cart' ||
       pathname == '/checkout' ||
       pathname.startsWith('/order') ||
-      pathname == '/' ||
       pathname.startsWith('/detail'))
   ) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
