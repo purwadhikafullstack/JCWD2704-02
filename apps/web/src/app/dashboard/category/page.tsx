@@ -1,4 +1,5 @@
 'use client';
+import '../../dashboard.css';
 import React, { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Link from 'next/link';
@@ -127,7 +128,7 @@ const Category = () => {
                             <img
                               src={`http://localhost:8000/category/images/${category.id}`}
                               alt="Image"
-                              className="h-16 w-16"
+                              className="h-8 w-9 "
                             />
                           </Table.Cell>
                           <Table.Cell>{category.name}</Table.Cell>
