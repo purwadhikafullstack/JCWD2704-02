@@ -23,12 +23,7 @@ export class ProductRouter {
     );
     this.router.get('/all', this.productController.getAllByDistance);
     this.router.get('/allData', this.productController.getAllData);
-    this.router.get(
-      '/:id',
-      validateToken,
-      verifyAdmin,
-      this.productController.getProductById,
-    );
+    this.router.get('/:id', this.productController.getProductById);
     this.router.post(
       '/',
       validateToken,

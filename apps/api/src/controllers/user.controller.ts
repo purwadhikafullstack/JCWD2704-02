@@ -59,9 +59,9 @@ export class UserController {
   async Location(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await UserService.Location(req);
-      console.log('====================================');
-      console.log(data);
-      console.log('====================================');
+      // console.log('====================================');
+      // console.log(data);
+      // console.log('====================================');
       res.send({
         message: 'Location has been save',
         // data,
